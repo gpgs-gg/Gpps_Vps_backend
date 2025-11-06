@@ -379,6 +379,9 @@ const ClientDocumentUpload = require('./routes/ClientDocumentUploadRoutes');
 const DynamicValues = require('./routes/dynamicRoutes');
 const otpRoutes = require('./routes/otpRoutes');
 const CreateClient = require('./routes/CreateClientRoutes');
+const checkOut = require('./routes/checkInOutRoutes');
+const checkIn = require('./routes/checkInRoutes');
+const attendanceDetails = require('./routes/attendanceRoutes');
 
 
 
@@ -471,6 +474,9 @@ app.use('/api', mainPropertySheetDataForClient);
 app.use('/api', ClientDocumentUpload);
 app.use('/api', DynamicValues);
 app.use('/api', CreateClient);
+app.use('/api', checkOut);
+app.use('/api', checkIn);
+app.use('/api', attendanceDetails);
 
 const PORT = 3000;
 app.listen(PORT, () => {
