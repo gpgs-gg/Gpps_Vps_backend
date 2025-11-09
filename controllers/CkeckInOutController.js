@@ -96,14 +96,14 @@ const uploadToGoogleDrive = async (fileBuffer, filename, properCode, clientName)
   const propertyCodeFolderId = await getOrCreateFolder(properCode, sharedDriveId);
 
   // ✅ Ensure clientName folder exists inside properCode folder
-  const clientFolderId = await getOrCreateFolder(clientName, propertyCodeFolderId);
+//   const clientFolderId = await getOrCreateFolder(clientName, propertyCodeFolderId);
 
   // ✅ Detect MIME type from filename
   const mimeType = mime.lookup(filename) || 'application/octet-stream';
 
   const fileMetadata = {
     name: filename,
-    parents: [clientFolderId],
+    parents: [propertyCodeFolderId],
   };
 
   const bufferStream = new Readable();
@@ -203,7 +203,7 @@ const CheckInOut = async (req, res) => {
         const uploadedFileURLs = [];
         if (req.files?.length > 0) {
             for (const file of req.files) {
-                const url = await uploadToGoogleDrive(file.buffer, file.originalname, req.body.EmployeeID , req.body.Name);
+                const url = await uploadToGoogleDrive(file.buffer, file.originalname, `${req.body.EmployeeID}-${req.body.Name}` , req.body.Name);
                 uploadedFileURLs.push(url.url); // store only URL
             }
         }
