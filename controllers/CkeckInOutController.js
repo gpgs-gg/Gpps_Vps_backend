@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-require('dotenv').config();
+// require('dotenv').config();
 const { Readable } = require('stream');
 const mime = require('mime-types');
 
@@ -42,8 +42,9 @@ const mime = require('mime-types');
 //     };
 // };
 
-
 const uploadToGoogleDrive = async (fileBuffer, filename, properCode, clientName) => {
+
+  
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_DRIVE_CLIENT_EMAIL,
@@ -146,7 +147,7 @@ const uploadToGoogleDrive = async (fileBuffer, filename, properCode, clientName)
 // ===== Main Function =====
 const CheckInOut = async (req, res) => {
 
-    console.log(req.body)
+ 
     try {
         const auth = new google.auth.GoogleAuth({
             credentials: {

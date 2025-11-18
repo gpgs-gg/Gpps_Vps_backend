@@ -89,17 +89,108 @@ const fetchDynamicSheetDataForAandSD = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
 module.exports = {
   fetchDynamicSheetData,
   fetchDynamicSheetDataForAandSD
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // const { GoogleSpreadsheet } = require("google-spreadsheet");
+// const { AllSheetNames } = require("../Config");
+
+// const sheets = require("../googleSheets");
+
+// // =======================
+// // FIRST FUNCTION (Already OK)
+// // =======================
+
+// const fetchDynamicSheetData = async (req, res) => {
+//   const sheetTitle = AllSheetNames.DYNAMIC_MASTER_TABLE;
+
+//   try {
+//     const doc = sheets.dynamicSheet;
+//     const sheet = doc.sheetsByTitle[sheetTitle];
+
+//     const rows = await sheet.getRows();
+//     const headers = sheet.headerValues;
+
+//     const data = rows.map(row => {
+//       const rowData = {};
+//       headers.forEach((h, i) => {
+//         rowData[h] = row._rawData[i] || "";
+//       });
+//       return rowData;
+//     });
+
+//     res.json({ success: true, total: data.length, data });
+
+//   } catch (err) {
+//     res.status(500).json({ success: false, message: "Error fetching" });
+//   }
+// };
+
+
+// // =======================
+// // SECOND FUNCTION — FIXED
+// // =======================
+
+// const fetchDynamicSheetDataForAandSD = async (req, res) => {
+//   const sheetTitle = AllSheetNames.DYNAMIC_MASTER_TABLEAandSD;
+
+//   try {
+//     const doc = sheets.dynamicSheetAandSD;   // <-- same structure like first one
+//     const sheet = doc.sheetsByTitle[sheetTitle];
+
+//     const rows = await sheet.getRows();
+//     const headers = sheet.headerValues;      // <-- no formatting, same as first
+
+//     const data = rows.map(row => {
+//       const rowData = {};
+//       headers.forEach((h, i) => {
+//         rowData[h] = row._rawData[i] || "";
+//       });
+//       return rowData;
+//     });
+
+//     return res.json({ success: true, total: data.length, data });
+
+//   } catch (err) {
+//     console.error("Error fetching:", err.message);
+//     return res.status(500).json({ success: false, message: "Error fetching" });
+//   }
+// };
+
+
+// // =======================
+// // EXPORT
+// // =======================
+
+// module.exports = {
+//   fetchDynamicSheetData,
+//   fetchDynamicSheetDataForAandSD
+// };

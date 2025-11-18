@@ -3,7 +3,9 @@ const { google } = require('googleapis');
 
 const changePassword = async (req, res) => {
   const { LoginID } = req.body;
+
   console.log("Received request body:", req.body);
+
   if (!LoginID) {
     return res.status(400).json({ error: '❌ Missing "LoginID" in request body.' });
   }
@@ -135,3 +137,133 @@ const changePassword = async (req, res) => {
 module.exports = {
   changePassword,
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const sheets = require("../googleSheets");
+// const { AllSheetNames } = require("../Config");
+
+// const changePassword = async (req, res) => {
+//   const { LoginID } = req.body;
+//   if (!LoginID) return res.status(400).json({ error: 'Missing "LoginID"' });
+
+//   // Converts GoogleSheet Row → Safe JSON (no circular structure)
+//   const makeSafeRow = (row) => {
+//     const safeObj = {};
+//     Object.keys(row._sheet.headerValues).forEach((header) => {
+//       safeObj[header] = row[header] || "";
+//     });
+//     return safeObj;
+//   };
+
+//   // Helper to update sheet
+//   const updateSheet = async (sheetDoc, sheetTitle) => {
+//     const sheet = sheetDoc.sheetsByTitle[sheetTitle];
+//     if (!sheet) throw new Error(`Sheet "${sheetTitle}" not found`);
+
+//     const rows = await sheet.getRows();
+//     if (!rows.length) return null;
+
+//     // Find row by LoginID
+//     const row = rows.find(
+//       (r) =>
+//         (r.LoginID || "").trim().toLowerCase() ===
+//         LoginID.trim().toLowerCase()
+//     );
+//     if (!row) return null;
+
+//     // Update row fields from body
+//     Object.keys(req.body).forEach((key) => {
+//       if (row.hasOwnProperty(key)) row[key] = req.body[key];
+//     });
+
+//     await row.save();
+
+//     return makeSafeRow(row); // return safe JSON only
+//   };
+
+//   try {
+//     // Try in primary sheet
+//     const updatedPrimary = await updateSheet(
+//       sheets.primarySheetId,
+//       AllSheetNames.EMPLOYEE_MASTER_TABLE
+//     );
+
+//     if (updatedPrimary)
+//       return res.status(200).json({
+//         message: "Updated in primary sheet",
+//         updated: updatedPrimary,
+//       });
+
+//     // Try in fallback sheet
+//     const updatedFallback = await updateSheet(
+//       sheets.fallbackSheetId,
+//       "MasterList"
+//     );
+
+//     if (updatedFallback)
+//       return res.status(200).json({
+//         message: "Updated in fallback sheet",
+//         updated: updatedFallback,
+//       });
+
+//     // Not found
+//     return res.status(404).json({
+//       error: `LoginID "${LoginID}" not found in any sheet.`,
+//     });
+//   } catch (err) {
+//     console.error("Error updating row:", err);
+//     return res.status(500).json({
+//       error: "Failed to update row",
+//       details: err.message,
+//     });
+//   }
+// };
+
+// module.exports = { changePassword };

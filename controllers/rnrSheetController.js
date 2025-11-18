@@ -98,7 +98,7 @@ const addRowToSheet = async (req, res) => {
         valueInputOption: 'USER_ENTERED',
         requestBody: {
           values: [updatedRow],
-        },
+        },  
       });
 
       return res.status(200).json({

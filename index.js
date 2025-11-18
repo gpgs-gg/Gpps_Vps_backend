@@ -370,9 +370,9 @@ const clientRoutes = require('./routes/clientsRoutes');
 const googleSheetRoutes = require('./routes/bedsAvilableRoutes');
 const dueAmountsRoutes = require('./routes/dueAmountsRoutes');
 const rnrSheetRoutes = require('./routes/rnrSheetRoutes');
-const createTicketRoutes = require('./routes/createTicketRoutes');
+const TicketRoutes = require('./routes/createTicketRoutes');/////////////////////
 const fetchTicketTableRoutes = require('./routes/fetchTicketTableRoutes');
-const updateTicketTableRoutes = require('./routes/createTicketRoutes');
+// const updateTicketTableRoutes = require('./routes/createTicketRoutes'); ///////////////////
 const changePasswordRoutes = require('./routes/changePasswordRoutes');
 const mainPropertySheetDataForClient = require('./routes/mainSheetDataForClientRoutes');
 const ClientDocumentUpload = require('./routes/ClientDocumentUploadRoutes');
@@ -382,6 +382,7 @@ const CreateClient = require('./routes/CreateClientRoutes');
 const checkOut = require('./routes/checkInOutRoutes');
 const checkIn = require('./routes/checkInRoutes');
 const attendanceDetails = require('./routes/attendanceRoutes');
+const leadsOperation = require('./routes/ClientLeadsRoutes');
 
 
 
@@ -395,12 +396,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(bodyParser.json());
-require('dotenv').config();
+// require('dotenv').config();
 // const express = require('express');
 const multer = require('multer');
 // const app = express();
 app.use(express.json());
 const storage = multer.memoryStorage();
+
 const upload = multer({
   storage,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max
@@ -465,9 +467,9 @@ app.use('/api', employeesRoutes);
 app.use('/api', googleSheetRoutes);
 app.use('/api', dueAmountsRoutes);
 app.use('/api', rnrSheetRoutes);
-app.use('/api', createTicketRoutes);
+app.use('/api', TicketRoutes);
 app.use('/api', fetchTicketTableRoutes);
-app.use('/api', updateTicketTableRoutes);
+// app.use('/api', updateTicketTableRoutes);
 app.use('/api', changePasswordRoutes);
 app.use('/api', clientRoutes);
 app.use('/api', mainPropertySheetDataForClient);
@@ -477,6 +479,7 @@ app.use('/api', CreateClient);
 app.use('/api', checkOut);
 app.use('/api', checkIn);
 app.use('/api', attendanceDetails);
+app.use('/api', leadsOperation);
 
 const PORT = 4000;
 app.listen(PORT, () => {

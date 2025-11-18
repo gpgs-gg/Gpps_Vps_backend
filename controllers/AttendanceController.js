@@ -43,7 +43,7 @@ const fetchAttendanceDetailSheetData = async (req, res) => {
     return res.status(500).json({ success: false, message: "Failed to fetch sheet data" });
   }
 };
-
+      
 
 // const { AllSheetNames } = require("../Config");
 
@@ -95,3 +95,86 @@ module.exports = {
   fetchSallaryTrackerDetailSheetData,
   fetchAttendanceDetailSheetData
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const sheets = require("../googleSheets");
+
+// // Attendance Sheet API
+// const fetchAttendanceDetailSheetData = async (req, res) => {
+//   try {
+//     const doc = sheets.attendanceSheet;
+
+//     const now = new Date();
+//     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+//     const sheetTitle = `${monthNames[now.getMonth()]}${now.getFullYear()}`;
+
+//     const sheet = doc.sheetsByTitle[sheetTitle];
+//     if (!sheet) return res.status(404).json({ success: false, message: "Sheet not found" });
+
+//     const rows = await sheet.getRows();
+//     const headers = sheet.headerValues.map(h => h.replace(/\n/g, ' ').trim());
+
+//     const data = rows.map(row => {
+//       const rowData = {};
+//       headers.forEach((header, i) => rowData[header] = row._rawData[i] || "");
+//       return rowData;
+//     });
+
+//     res.json({ success: true, total: data.length, data });
+//   } catch (error) {
+//     console.error("Error fetching attendance sheet:", error.message);
+//     res.status(500).json({ success: false, message: "Failed to fetch sheet data" });
+//   }
+// };
+
+// // Salary Tracker Sheet API
+// const fetchSallaryTrackerDetailSheetData = async (req, res) => {
+//   try {
+//     const doc = sheets.sallaryTrakerSheet;
+//     const sheetTitle = "ForIT-DoNotDelete";
+
+//     const sheet = doc.sheetsByTitle[sheetTitle];
+//     if (!sheet) return res.status(404).json({ success: false, message: "Sheet not found" });
+
+//     const rows = await sheet.getRows();
+//     const headers = sheet.headerValues.map(h => h.replace(/\n/g, ' ').trim());
+
+//     const data = rows.map(row => {
+//       const rowData = {};
+//       headers.forEach((header, i) => rowData[header] = row._rawData[i] || "");
+//       return rowData;
+//     });
+
+//     res.json({ success: true, total: data.length, data });
+//   } catch (error) {
+//     console.error("Error fetching salary tracker sheet:", error.message);
+//     res.status(500).json({ success: false, message: "Failed to fetch sheet data" });
+//   }
+// };
+
+// module.exports = {
+//   fetchSallaryTrackerDetailSheetData,
+//   fetchAttendanceDetailSheetData
+// };
+
+
+
+
+
+
+
+
