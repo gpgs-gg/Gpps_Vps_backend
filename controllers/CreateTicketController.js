@@ -127,7 +127,7 @@ const { google } = require('googleapis');
 // const cloudinary = require('cloudinary').v2;
 // const streamifier = require('streamifier');
 const { AllSheetNames } = require('../Config');
-require('dotenv').config();
+
 
 // const { google } = require('googleapis');
 const { Readable } = require('stream');
@@ -679,7 +679,7 @@ for (const header of headers) {
 
   if (header === "Attachment") {
     // Pattern to match valid existing attachments
-    const validUrlPattern = /(https?:\/\/localhost:\d+\/[^",]+|https?:\/\/gpgs-main-server\.vercel\.app\/[^",]+)/g;
+  const validUrlPattern = /(https?:\/\/localhost:\d+\/[^",]+|https?:\/\/gpgs-main-server\.vercel\.app\/[^",]+|https?:\/\/api\.gpgs24\.in\/[^",]+)/g;
 
     // Extract existing attachments from req.body.Attachment
     const existingAttachments = [...(req.body.Attachment || "").matchAll(validUrlPattern)]
@@ -756,17 +756,8 @@ for (const header of headers) {
 };
 
 
-
-// module.exports = {
-//   updateTicketSheetData,
-//   CreateTicket
-// };
-
-
-
-
-
 module.exports = {
   CreateTicket,
   updateTicketSheetData,
 };
+

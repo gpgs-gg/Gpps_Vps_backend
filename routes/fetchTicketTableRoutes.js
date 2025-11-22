@@ -3,6 +3,6 @@ const router = express.Router();
 const { fetchTicketSheetData } = require('../controllers/FetchTicketTableController');
 
 // POST /add-row
-router.get('/tick-sheet-data', fetchTicketSheetData);
+router.get('/ticket-sheet-data', fetchTicketSheetData);
 
 module.exports = router;
