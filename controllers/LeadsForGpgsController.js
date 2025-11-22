@@ -3,70 +3,127 @@ const { google } = require('googleapis');
 
 
 
+
+
 async function createClientLeads(req, res) {
   try {
+    // 🔑 Google Sheets auth
     const auth = new google.auth.GoogleAuth({
       credentials: {
-        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
       },
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
-    const sheets = google.sheets({ version: 'v4', auth });
-    const spreadsheetId = '1XbSWQ1yTMLVEfo0Kvx94Xr5Gv52URCgUaFks8SUPvAU';
-    const sheetName = 'NewLeads';
+    const sheets = google.sheets({ version: "v4", auth });
+
+    const spreadsheetId = "1XbSWQ1yTMLVEfo0Kvx94Xr5Gv52URCgUaFks8SUPvAU";
+    const sheetName = "NewLeads";
     const data = req.body;
 
-    // 🔹 Fetch existing rows
+    // ----------------------------------------------------
+    // 1️⃣ GET SHEET ID OF "NewLeads"
+    // ----------------------------------------------------
+    const spreadsheetInfo = await sheets.spreadsheets.get({ spreadsheetId });
+
+    const sheet = spreadsheetInfo.data.sheets.find(
+      (s) => s.properties.title === sheetName
+    );
+
+    if (!sheet) {
+      return res.status(400).json({ message: "❌ Sheet not found!" });
+    }
+
+    const sheetId = sheet.properties.sheetId;
+
+    // ----------------------------------------------------
+    // 2️⃣ GET HEADERS (A1:N1)
+    // ----------------------------------------------------
+    const headerRes = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${sheetName}!A1:N1`,
+    });
+
+    const headers = headerRes.data.values[0];
+
+    // ----------------------------------------------------
+    // 3️⃣ GET EXISTING ROWS TO CALCULATE LeadNo
+    // ----------------------------------------------------
     const existingData = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range: `${sheetName}!A2:N`,
     });
 
     const rows = existingData.data.values || [];
-    const srNo = rows.length + 1;
+    const LeadNo = rows.length + 1;
 
-    // 📅 Proper date
+    // ----------------------------------------------------
+    // 4️⃣ GET TODAY DATE (formatted)
+    // ----------------------------------------------------
     const now = new Date();
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const today = `${String(now.getDate()).padStart(2, "0")} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const today = `${String(now.getDate()).padStart(2,"0")} ${months[now.getMonth()]} ${now.getFullYear()}`;
 
-    // 🧠 Prepare new row
-    const newRow = [
-      srNo.toString(),
-      today,
-      data.ClientName || "",
-      data.MaleFemale?.value || data.MaleFemale || "",
-      data.CallingNo || "",
-      data.WhatsAppNo || "",
-      data.LeadSource?.value || data.LeadSource || "",
-      data.WhatsAppCommunication?.value || data.WhatsAppCommunication || "",
-      data.PhoneCallCommunication?.value || data.PhoneCallCommunication || "",
-      data.visited?.value || data.visited || "",
-      data.FollowUpDate || "",
-      data.Comments || "",
-      data.BookingDone || "",
-      data.BookingNotDoneComments || ""
-    ];
-
-    // ✅ Add new row at top (A2)
-    const updatedData = [newRow, ...rows];
-
-    await sheets.spreadsheets.values.update({
-      spreadsheetId,
-      range: `${sheetName}!A2:N`,
-      valueInputOption: 'USER_ENTERED',
-      resource: { values: updatedData },
+    // ----------------------------------------------------
+    // 5️⃣ PREPARE NEW ROW VALUES
+    // ----------------------------------------------------
+    const newRow = headers.map((header) => {
+      if (header === "LeadNo") return LeadNo.toString();
+      if (header === "Date") return today;
+      return data[header] ?? "";
     });
 
-    res.status(200).json({ message: "Client added at TOP successfully!" });
+    // ----------------------------------------------------
+    // 6️⃣ INSERT EMPTY ROW AT TOP (A2)
+    // ----------------------------------------------------
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      resource: {
+        requests: [
+          {
+            insertDimension: {
+              range: {
+                sheetId: sheetId,   // <-- the correct sheetId
+                dimension: "ROWS",
+                startIndex: 1,       // row 2 (0-based index)
+                endIndex: 2
+              },
+              inheritFromBefore: false,
+            },
+          },
+        ],
+      },
+    });
+
+    // ----------------------------------------------------
+    // 7️⃣ WRITE YOUR NEW DATA INTO A2
+    // ----------------------------------------------------
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${sheetName}!A2:N2`,
+      valueInputOption: "USER_ENTERED",
+      resource: {
+        values: [newRow],
+      },
+    });
+
+    // ----------------------------------------------------
+    // 8️⃣ RESPONSE
+    // ----------------------------------------------------
+    res.status(200).json({
+      message: "✅ Client added at TOP successfully!",
+      LeadNo,
+    });
+
   } catch (error) {
     console.error("❌ Error adding client:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({
+      message: "Server Error",
+      error: error.message,
+    });
   }
 }
-
 
 
 
@@ -122,80 +179,94 @@ async function updateClientLeads(req, res) {
   try {
     const auth = new google.auth.GoogleAuth({
       credentials: {
-        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
       },
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
-    const sheets = google.sheets({ version: 'v4', auth });
+    const sheets = google.sheets({ version: "v4", auth });
 
-    const { srNo, data } = req.body;
+    const { data } = req.body;
 
-    if (!srNo || !data) {
-      return res.status(400).json({ message: "Missing srNo or data in request" });
+    if (!data?.LeadNo) {
+      return res.status(400).json({ message: "Missing LeadNo or data" });
     }
 
-    const spreadsheetId = '1XbSWQ1yTMLVEfo0Kvx94Xr5Gv52URCgUaFks8SUPvAU';
-    const sheetName = 'NewLeads';
+    const spreadsheetId = "1XbSWQ1yTMLVEfo0Kvx94Xr5Gv52URCgUaFks8SUPvAU";
+    const sheetName = "NewLeads";
 
-    // ✅ Fetch SrNo column
-    const existingData = await sheets.spreadsheets.values.get({
+    // Read sheet
+    const sheetData = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `${sheetName}!A2:A10000`,
+      range: `${sheetName}!A:AZ`,
     });
 
-    const rows = existingData.data.values || [];
+    const rows = sheetData.data.values || [];
+    if (rows.length === 0)
+      return res.status(400).json({ message: "Sheet is empty" });
 
-    // ✅ Find matching srNo index
-    const targetIndex = rows.findIndex(row => row[0] === srNo.toString());
+    const headers = rows[0];
 
+    // Find the row with the LeadNo
+    const targetIndex = rows.findIndex((row) => row[0] === data.LeadNo);
     if (targetIndex === -1) {
-      return res.status(404).json({ message: "SrNo not found in sheet" });
+      return res.status(404).json({ message: "LeadNo not found" });
     }
 
-    // ⭐ SrNo MUST NOT CHANGE
-    const originalSrNo = srNo;
+    // Helper to clean header
+    function cleanHeader(h) {
+      return h.replace(/\s+/g, "").trim();
+    }
 
-    // ⭐ Existing date should stay same
-    const dateCell = (await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: `${sheetName}!B${targetIndex + 2}`,
-    })).data.values?.[0]?.[0] || "";
+    // Normalizer
+    const normalize = (value) => value?.value || value || "";
 
-    // ⭐ Prepare updated row
-    const updatedRow = [
-      originalSrNo.toString(),               // KEEP SAME SRNO
-      dateCell,                             // KEEP OLD DATE
-      data.ClientName || "",
-      data.MaleFemale?.value || data.MaleFemale || "",
-      data.CallingNo || "",
-      data.WhatsAppNo || "",
-      data.LeadSource?.value || data.LeadSource || "",
-      data.WhatsAppCommunication?.value || data.WhatsAppCommunication || "",
-      data.PhoneCallCommunication?.value || data.PhoneCallCommunication || "",
-      data.visited?.value || data.visited || "",
-      data.FollowUpDate || "",
-      data.Comments || "",
-      data.BookingDone || "",
-      data.BookingNotDoneComments || ""
-    ];
+    // Build updated row based on headers
+    const updatedRow = headers.map((header, colIndex) => {
+      const clean = cleanHeader(header);
 
-    const updateRange = `${sheetName}!A${targetIndex + 2}:N${targetIndex + 2}`;
+      // Keep LeadNo and Date unchanged
+      if (clean === "LeadNo") return data.LeadNo;
+      if (clean === "Date") return rows[targetIndex][colIndex] || "";
+
+      // Pick value from incoming data
+      return normalize(data[clean]);
+    });
+
+    const rowNumber = targetIndex + 1;
+
+    // Convert index → Excel column (A, B, ..., Z, AA, AB ...)
+    function getColumnLetter(colIndex) {
+      let letter = "";
+      while (colIndex >= 0) {
+        letter = String.fromCharCode((colIndex % 26) + 65) + letter;
+        colIndex = Math.floor(colIndex / 26) - 1;
+      }
+      return letter;
+    }
+
+    const lastColumn = getColumnLetter(headers.length - 1);
+    const updateRange = `${sheetName}!A${rowNumber}:${lastColumn}${rowNumber}`;
 
     await sheets.spreadsheets.values.update({
       spreadsheetId,
       range: updateRange,
-      valueInputOption: 'USER_ENTERED',
+      valueInputOption: "USER_ENTERED",
       resource: { values: [updatedRow] },
     });
 
-    return res.status(200).json({ message: "Client updated successfully!" });
-
+    return res
+      .status(200)
+      .json({ message: "Client updated successfully!" });
   } catch (error) {
     console.error("❌ Error updating client:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    return res.status(500).json({
+      message: "Server Error",
+      error: error.message,
+    });
   }
 }
+
 
 module.exports = { createClientLeads, getAllClientsLeads, updateClientLeads };
