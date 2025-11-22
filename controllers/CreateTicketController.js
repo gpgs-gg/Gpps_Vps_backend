@@ -128,7 +128,6 @@ const { google } = require('googleapis');
 // const streamifier = require('streamifier');
 const { AllSheetNames } = require('../Config');
 
-
 // const { google } = require('googleapis');
 const { Readable } = require('stream');
 const path = require('path');
@@ -209,7 +208,7 @@ const CreateTicket = async (req, res) => {
       },
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
- 
+
     const sheets = google.sheets({ version: 'v4', auth });
     const spreadsheetId = "1kHjPWalsEaPO6IS756N43IFk7z1xRcrDeO6VG2AurwI";
     const sheetTitle = req.query.sheet || AllSheetNames.TICKET_MASTER_TABLE;
@@ -252,14 +251,14 @@ const CreateTicket = async (req, res) => {
     });
 
 
-   // Handle file uploads to Google Drive
-const uploadedFileURLs = [];
-if (req.files?.length > 0) {
-  for (const file of req.files) {                                      // folder id added here  .......
-    const url = await uploadToGoogleDrive(file.buffer, file.originalname, process.env.TICKETS);
-    uploadedFileURLs.push(url);
-  }
-}
+    // Handle file uploads to Google Drive
+    const uploadedFileURLs = [];
+    if (req.files?.length > 0) {
+      for (const file of req.files) {                                      // folder id added here  .......
+        const url = await uploadToGoogleDrive(file.buffer, file.originalname, process.env.TICKETS);
+        uploadedFileURLs.push(url);
+      }
+    }
 
     // Prepare row data
     const rowData = headers.map(header => {
@@ -662,50 +661,49 @@ const updateTicketSheetData = async (req, res) => {
     //   `${req.protocol}://${req.get('host')}/uploads/${file.filename}`
     // );
 
-let uploadedFileURLs = [];
-
+    let uploadedFileURLs = [];
 // If new files are uploaded, upload to Google Drive
-if (req.files?.length > 0) {
-  uploadedFileURLs = await Promise.all(
-    req.files.map(file => uploadToGoogleDrive(file.buffer, file.originalname, "0ADzSPK9dbjmuUk9PVA"))
-  );
-}
-
-// --- Build partial update by matching header names ---
-const updates = [];
-
-for (const header of headers) {
-  if (header === "TicketID") continue; // Don't update TicketID column
-
-  if (header === "Attachment") {
-    // Pattern to match valid existing attachments
-  const validUrlPattern = /(https?:\/\/localhost:\d+\/[^",]+|https?:\/\/gpgs-main-server\.vercel\.app\/[^",]+|https?:\/\/api\.gpgs24\.in\/[^",]+)/g;
-
-    // Extract existing attachments from req.body.Attachment
-    const existingAttachments = [...(req.body.Attachment || "").matchAll(validUrlPattern)]
-      .map(match => match[0].trim())
-      .filter(url => !url.startsWith("blob:")); // Ignore blobs
-
-    // Combine existing + newly uploaded
-    const combinedAttachments = [...existingAttachments, ...uploadedFileURLs.map(ele=>ele.url)].join(",");
-
-    if (combinedAttachments.length > 0) {
-      const colIndex = headers.indexOf(header);
-      updates.push({ colIndex, value: combinedAttachments });
-    }
-  } else if (Object.prototype.hasOwnProperty.call(req.body, header)) {
-    let value = req.body[header];
-
-    if (typeof value === 'string' && value.trim().startsWith('=')) {
-      value = value.trim(); // preserve formulas
-    } else if (typeof value === 'object') {
-      value = JSON.stringify(value);
+    if (req.files?.length > 0) {
+      uploadedFileURLs = await Promise.all(
+        req.files.map(file => uploadToGoogleDrive(file.buffer, file.originalname, "0ADzSPK9dbjmuUk9PVA"))
+      );
     }
 
-    const colIndex = headers.indexOf(header);
-    updates.push({ colIndex, value });
-  }
-}
+    // --- Build partial update by matching header names ---
+    const updates = [];
+
+    for (const header of headers) {
+      if (header === "TicketID") continue; // Don't update TicketID column
+
+      if (header === "Attachment") {
+        // Pattern to match valid existing attachments
+        const validUrlPattern = /(https?:\/\/localhost:\d+\/[^",]+|https?:\/\/gpgs-main-server\.vercel\.app\/[^",]+|https?:\/\/api\.gpgs24\.in\/[^",]+)/g;
+
+        // Extract existing attachments from req.body.Attachment
+        const existingAttachments = [...(req.body.Attachment || "").matchAll(validUrlPattern)]
+          .map(match => match[0].trim())
+          .filter(url => !url.startsWith("blob:")); // Ignore blobs
+
+        // Combine existing + newly uploaded
+        const combinedAttachments = [...existingAttachments, ...uploadedFileURLs.map(ele => ele.url)].join(",");
+
+        if (combinedAttachments.length > 0) {
+          const colIndex = headers.indexOf(header);
+          updates.push({ colIndex, value: combinedAttachments });
+        }
+      } else if (Object.prototype.hasOwnProperty.call(req.body, header)) {
+        let value = req.body[header];
+
+        if (typeof value === 'string' && value.trim().startsWith('=')) {
+          value = value.trim(); // preserve formulas
+        } else if (typeof value === 'object') {
+          value = JSON.stringify(value);
+        }
+
+        const colIndex = headers.indexOf(header);
+        updates.push({ colIndex, value });
+      }
+    }
 
     if (updates.length === 0) {
       return res.status(200).json({
@@ -754,6 +752,8 @@ for (const header of headers) {
     });
   }
 };
+
+
 
 
 module.exports = {

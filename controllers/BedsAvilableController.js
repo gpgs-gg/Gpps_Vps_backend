@@ -101,3 +101,55 @@ const BedAvailableSheetData = async (req, res) => {
 module.exports = {
   BedAvailableSheetData,
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const sheets = require("../googleSheets");
+// const BedAvailableSheetData = async (req, res) => {
+//   const sheetTitle = "Bedslist_gpgs";
+ 
+//   try {
+//       const doc = sheets.bedsAvilable;
+//     const sheet = doc.sheetsByTitle[sheetTitle];
+//     await doc.loadInfo();
+//     if (!sheet) {
+//       return res.status(404).json({ success: false, message: "Sheet not found" });
+//     }
+
+//     const rows = await sheet.getRows();
+//     const headers = sheet.headerValues.map(h => h.replace(/\n/g, ' ').trim());
+
+//     const data = rows.map(row => {
+//       const rowData = {};
+//       headers.forEach((header, i) => {
+//         rowData[header] = row._rawData[i] || "";
+//       });
+//       return rowData;
+//     });
+
+//     return res.json({ success: true, total: data.length, data });
+//   } catch (error) {
+//     console.error("Error fetching sheet:", error.message);
+//     return res.status(500).json({ success: false, message: "Failed to fetch sheet data" });
+//   }
+// };
+
+// module.exports = {
+//   BedAvailableSheetData,
+// };

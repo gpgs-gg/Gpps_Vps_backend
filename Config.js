@@ -1,11 +1,13 @@
 
 
 
- const AllSheetNames = {
+const AllSheetNames = {
   TICKET_MASTER_TABLE: "Tickets",
   EMPLOYEE_MASTER_TABLE: "EmpList",
   CLIENT_MASTER_TABLE: "MasterList",
- DYNAMIC_MASTER_TABLE: "Department&Category",
+  DYNAMIC_MASTER_TABLE: "Department&Category",
+  DYNAMIC_MASTER_TABLEAandSD: "DigitalA&SD_GPGS",
+
   // PRIORITY_MASTER_TABLE: "PriorityMaster",
   // STATUS_MASTER_TABLE: "StatusMaster",
   // CHANGE_PASSWORD_TABLE: "ChangePassword",
