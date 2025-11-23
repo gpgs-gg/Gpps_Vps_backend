@@ -127,7 +127,6 @@ const { google } = require('googleapis');
 // const cloudinary = require('cloudinary').v2;
 // const streamifier = require('streamifier');
 const { AllSheetNames } = require('../Config');
-// require('dotenv').config();
 
 // const { google } = require('googleapis');
 const { Readable } = require('stream');
@@ -663,8 +662,7 @@ const updateTicketSheetData = async (req, res) => {
     // );
 
     let uploadedFileURLs = [];
-
-    // If new files are uploaded, upload to Google Drive
+// If new files are uploaded, upload to Google Drive
     if (req.files?.length > 0) {
       uploadedFileURLs = await Promise.all(
         req.files.map(file => uploadToGoogleDrive(file.buffer, file.originalname, "0ADzSPK9dbjmuUk9PVA"))
@@ -762,3 +760,4 @@ module.exports = {
   CreateTicket,
   updateTicketSheetData,
 };
+

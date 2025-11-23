@@ -194,7 +194,6 @@
 
 const { google } = require('googleapis');
 const { AllSheetNames } = require('../Config');
-// require('dotenv').config();
 const { Readable } = require('stream');
 const path = require('path');
 const mime = require('mime-types');
