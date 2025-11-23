@@ -93,10 +93,6 @@ const fetchSallaryTrackerDetailSheetData = async (req, res) => {
   }
 };
 
-
-
-
-
 const createSallaryDetails = async (req, res) => {
   try {
     // Auth
@@ -215,8 +211,6 @@ const createSallaryDetails = async (req, res) => {
     });
   }
 };
-
-
 
 
 module.exports = {

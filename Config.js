@@ -7,6 +7,7 @@ const AllSheetNames = {
   CLIENT_MASTER_TABLE: "MasterList",
   DYNAMIC_MASTER_TABLE: "Department&Category",
   DYNAMIC_MASTER_TABLEAandSD: "DigitalA&SD_GPGS",
+  DYNAMIC_MASTER_TABLEAllowedUsers: "AllowedUsers",
 
   // PRIORITY_MASTER_TABLE: "PriorityMaster",
   // STATUS_MASTER_TABLE: "StatusMaster",
