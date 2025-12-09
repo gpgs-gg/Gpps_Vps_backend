@@ -4,10 +4,11 @@ const { google } = require('googleapis');
 // const { AllSheetNames } = require("../Config");
 
 const fetchAttendanceDetailSheetData = async (req, res) => {
+ const month = req.params.month; // <-- use 'id' not 'month'
   const spreadsheetId = "16sWGF4GPIX3D3VVQjnOc6JV8N0kC7aa-pACuiGjeoKo";
-  const now = new Date();
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const sheetTitle = `${monthNames[now.getMonth()]}${now.getFullYear()}`;
+  // const now = new Date();
+  // const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const sheetTitle = `${month}`;
 
   if (!spreadsheetId || !sheetTitle) {
     return res.status(400).json({ success: false, message: "Missing sheet ID or title" });
@@ -50,11 +51,13 @@ const fetchAttendanceDetailSheetData = async (req, res) => {
 // const { AllSheetNames } = require("../Config");
 
 const fetchSallaryTrackerDetailSheetData = async (req, res) => {
+   const month = req.params.month; // <-- use 'id' not 'month'
+
   const spreadsheetId = "1obwi57lOWuJvnq6dybq0_2Rs743nQqhdA_sBKmjHs88";
-  const now = new Date();
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  // const sheetTitle = `${monthNames[now.getMonth()]}${now.getFullYear()}`;
-  const sheetTitle = `ForIT-DoNotDelete`;
+    // const now = new Date();
+    // const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const sheetTitle = `${month}`;
+  // const sheetTitle = `ForIT-DoNotDelete`;
 
   if (!spreadsheetId || !sheetTitle) {
     return res.status(400).json({ success: false, message: "Missing sheet ID or title" });
@@ -94,6 +97,8 @@ const fetchSallaryTrackerDetailSheetData = async (req, res) => {
 };
 
 const createSallaryDetails = async (req, res) => {
+     const month = req.params.month; // <-- use 'id' not 'month'
+
   try {
     // Auth
     const auth = new google.auth.GoogleAuth({
@@ -106,7 +111,7 @@ const createSallaryDetails = async (req, res) => {
 
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = "1obwi57lOWuJvnq6dybq0_2Rs743nQqhdA_sBKmjHs88";
-    const sheetTitle = "ForIT-DoNotDelete";
+    const sheetTitle = `${month}`;
 
     // Get headers & rows
     const sheetResponse = await sheets.spreadsheets.values.get({
